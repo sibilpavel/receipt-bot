@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>{{ "Платёж подтверждён" if ok else "Платёж не найден" }}</title>
+  <link rel="stylesheet" href="/static/receipt.css">
+</head>
+<body>
+  <main class="ticket">
+    {% if ok %}
+    <div class="verify-box">
+      <div class="status">Платёж найден в системе</div>
+      <h1>{{ amount }}</h1>
+      <p>{{ date }}</p>
+      <p>Операция {{ payment_id }}</p>
+    </div>
+    {% else %}
+    <div class="verify-box bad">
+      <div class="status">Платёж не найден</div>
+      <h1>Проверка не пройдена</h1>
+      <p>Такой операции нет в системе, либо ссылка изменена.</p>
+    </div>
+    {% endif %}
+  </main>
+</body>
+</html>

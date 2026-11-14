@@ -1,0 +1,112 @@
+:root {
+  --ink: #0e1a2b;
+  --muted: #5d6b7d;
+  --desk: #d9e2ec;
+  --paper: #fbfcfd;
+  --line: #c3cfdc;
+  --ok: #0f7b5a;
+  --signal: #2b4eff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 28px 16px 40px;
+  background: var(--desk);
+  color: var(--ink);
+  font-family: ui-sans-serif, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.4;
+}
+
+.ticket {
+  max-width: 400px;
+  margin: 0 auto;
+  filter: drop-shadow(0 10px 18px rgba(14, 26, 43, .14));
+}
+
+.part {
+  background: var(--paper);
+  padding: 28px 26px;
+}
+.part.top { border-radius: 14px 14px 0 0; }
+.part.bottom { border-radius: 0 0 14px 14px; padding-top: 24px; }
+
+/* Линия отрыва с вырезами по бокам */
+.tear {
+  position: relative;
+  height: 22px;
+  background: var(--paper);
+}
+.tear::before {
+  content: "";
+  position: absolute;
+  left: 22px; right: 22px; top: 50%;
+  border-top: 2px dashed var(--line);
+}
+.tear::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle 11px at 0 50%, var(--desk) 98%, transparent) left / 51% 100% no-repeat,
+    radial-gradient(circle 11px at 100% 50%, var(--desk) 98%, transparent) right / 51% 100% no-repeat;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ok);
+  font-weight: 600;
+  font-size: 15px;
+}
+.status svg { flex: none; }
+
+.amount {
+  margin: 18px 0 4px;
+  font-size: 52px;
+  font-weight: 800;
+  letter-spacing: -.03em;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+.what { color: var(--muted); font-size: 16px; margin: 0; }
+
+.since { color: var(--muted); font-size: 14px; margin: 0 0 4px; }
+.timer {
+  margin: 0 0 22px;
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: .01em;
+  color: var(--signal);
+  font-variant-numeric: tabular-nums;
+}
+
+.qr {
+  width: 100%;
+  max-width: 260px;
+  padding: 12px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: #fff;
+}
+.qr svg { display: block; width: 100%; height: auto; }
+
+dl { margin: 22px 0 0; }
+dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+}
+dt { color: var(--muted); }
+dd { margin: 0; text-align: right; word-break: break-all; font-variant-numeric: tabular-nums; }
+
+.verify-box { padding: 32px 26px; border-radius: 14px; background: var(--paper); }
+.verify-box h1 { margin: 12px 0 4px; font-size: 24px; }
+.verify-box p { margin: 0; color: var(--muted); }
+.verify-box.bad .status { color: #b3261e; }

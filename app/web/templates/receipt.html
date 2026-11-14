@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Чек об оплате {{ amount }}</title>
+  <link rel="stylesheet" href="/static/receipt.css">
+</head>
+<body>
+  <main class="ticket">
+    <section class="part top">
+      <div class="status">
+        <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+          <circle cx="11" cy="11" r="11" fill="currentColor"/>
+          <path d="M6 11.4l3.2 3.2L16 7.8" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Оплата принята
+      </div>
+      <p class="amount">{{ amount }}</p>
+      <p class="what">{{ description }}</p>
+    </section>
+
+    <div class="tear" aria-hidden="true"></div>
+
+    <section class="part bottom">
+      <p class="since">С момента оплаты прошло</p>
+      <p class="timer" id="timer" aria-live="off">--:--:--</p>
+
+      <div class="qr">{{ qr | safe }}</div>
+
+      <dl>
+        <div><dt>Дата и время</dt><dd>{{ date }}</dd></div>
+        <div><dt>Операция</dt><dd>{{ payment_id }}</dd></div>
+      </dl>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var start = {{ paid_at }};
+      var el = document.getElementById("timer");
+      function pad(n) { return String(n).padStart(2, "0"); }
+      function tick() {
+        var s = Math.max(0, Math.floor(Date.now() / 1000 - start));
+        el.textContent = pad(Math.floor(s / 3600)) + ":" + pad(Math.floor(s % 3600 / 60)) + ":" + pad(s % 60);
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+</body>
+</html>
