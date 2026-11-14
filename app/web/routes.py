@@ -11,6 +11,7 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field, ValidationError
 
 from app.bot.keyboards import open_receipt
+from app.config import FARE_KOP
 from app.db import Payment
 from app.formatting import format_amount, format_dt
 from app.links import verify_url
@@ -42,7 +43,7 @@ async def payment_webhook(request: Request):
     except (ValueError, ValidationError) as e:
         raise HTTPException(422, f"bad payload: {e}")
 
-    payment = Payment(ev.payment_id, ev.tg_user_id, ev.amount_kop,
+    payment = Payment(ev.payment_id, ev.tg_user_id, FARE_KOP,
                       ev.description, ev.paid_at or int(time.time()))
     is_new = await st.db.add_payment(payment)
 

@@ -1,15 +1,13 @@
 import re
 import time
-from decimal import Decimal
 
 from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.types import Message
 
 from app.bot.keyboards import open_receipt, receipts_list
-from app.config import Settings
+from app.config import FARE_KOP, Settings
 from app.db import Database, Payment
-from app.formatting import format_amount
 
 router = Router()
 
@@ -31,17 +29,18 @@ async def receipts(message: Message, db: Database, settings: Settings):
     await message.answer("Последние платежи:", reply_markup=receipts_list(settings, payments))
 
 
-# Тестовый режим: "5 12345" -> сумма 5 ₽, номер платежа 12345.
-# Сумма в рублях (можно "5,50"), номер — буквы/цифры/_/-.
-TEST_INPUT = re.compile(r"^\s*(\d{1,9}(?:[.,]\d{1,2})?)\s+([A-Za-z0-9_\-]{1,64})\s*$")
+# Тестовый режим: "5 12345" -> автобус №5, номер платежа 12345.
+# Первое число — номер автобуса, второе — номер платежа (буквы/цифры/_/-).
+# Цена проезда всегда одна и та же.
+TEST_INPUT = re.compile(r"^\s*(\d{1,4})\s+([A-Za-z0-9_\-]{1,64})\s*$")
 
 
-def parse_test_input(text: str) -> tuple[int, str] | None:
+def parse_test_input(text: str) -> tuple[str, str] | None:
+    """Возвращает (номер_автобуса, номер_платежа) или None."""
     m = TEST_INPUT.match(text or "")
     if not m:
         return None
-    kop = int(Decimal(m.group(1).replace(",", ".")) * 100)
-    return (kop, m.group(2)) if kop > 0 else None
+    return m.group(1), m.group(2)
 
 
 @router.message(F.text.regexp(TEST_INPUT))
@@ -51,15 +50,15 @@ async def test_payment(message: Message, db: Database, settings: Settings):
     parsed = parse_test_input(message.text)
     if not parsed:
         return
-    kop, payment_id = parsed
-    # Повторный ввод того же номера не меняет платёж — просто отдаём ту же ссылку.
-    await db.add_payment(Payment(payment_id, message.from_user.id, kop,
-                                 "Тестовый платёж", int(time.time())))
+    bus, payment_id = parsed
+    # Повторный ввод своего номера обновляет автобус и сумму (всегда 53 ₽).
+    await db.upsert_payment(Payment(payment_id, message.from_user.id, FARE_KOP,
+                                 f"Автобус: №{bus}", int(time.time())))
     p = await db.get_payment(payment_id)
     if p.tg_user_id != message.from_user.id:
         await message.answer("Этот номер платежа уже занят другим пользователем.")
         return
     await message.answer(
-        f"Оплата {format_amount(p.amount_kop)} прошла успешно.",
+        f"Оплата автобуса номер {bus} прошла",
         reply_markup=open_receipt(settings, p.id),
     )

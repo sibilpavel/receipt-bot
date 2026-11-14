@@ -5,6 +5,9 @@ from zoneinfo import ZoneInfo
 from dotenv import load_dotenv
 
 
+FARE_KOP = 5300  # цена проезда всегда 53 ₽
+
+
 @dataclass(frozen=True)
 class Settings:
     bot_token: str

@@ -49,6 +49,16 @@ class Database:
         await self._conn.commit()
         return cur.rowcount == 1
 
+    async def upsert_payment(self, p: Payment) -> None:
+        """Создаёт платёж или обновляет сумму/описание, если он принадлежит тому же пользователю."""
+        await self._conn.execute(
+            "INSERT INTO payments VALUES (?, ?, ?, ?, ?) "
+            "ON CONFLICT(id) DO UPDATE SET amount_kop = excluded.amount_kop, "
+            "description = excluded.description WHERE tg_user_id = excluded.tg_user_id",
+            (p.id, p.tg_user_id, p.amount_kop, p.description, p.paid_at),
+        )
+        await self._conn.commit()
+
     async def get_payment(self, payment_id: str) -> Payment | None:
         cur = await self._conn.execute("SELECT * FROM payments WHERE id = ?", (payment_id,))
         row = await cur.fetchone()

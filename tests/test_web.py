@@ -38,6 +38,7 @@ def test_receipt_page(client, settings):
     post(client, EVENT)
     r = client.get(path(receipt_url(settings, "pay_0001")))
     assert r.status_code == 200
+    assert r.text.count("₽") == 1
     assert "53\u00a0₽" in r.text and "pay_0001" in r.text and "<svg" in r.text
 
 
@@ -58,7 +59,12 @@ def test_verify_ok_and_unknown(client, settings):
 
 def test_parse_test_input():
     from app.bot.handlers import parse_test_input
-    assert parse_test_input("5 12345") == (500, "12345")
-    assert parse_test_input(" 5,50   ab-1 ") == (550, "ab-1")
-    assert parse_test_input("0 12345") is None
+    assert parse_test_input("5 12345") == ("5", "12345")
+    assert parse_test_input(" 12   ab-1 ") == ("12", "ab-1")
     assert parse_test_input("hello") is None
+
+
+def test_fare_always_53(client, settings):
+    post(client, {**EVENT, "payment_id": "pay_0002", "amount_kop": 100})
+    r = client.get(path(receipt_url(settings, "pay_0002")))
+    assert "53\u00a0₽" in r.text
