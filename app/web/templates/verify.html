@@ -7,8 +7,8 @@
   <title>{{ "Платёж подтверждён" if ok else "Платёж не найден" }}</title>
   <link rel="stylesheet" href="/static/receipt.css">
 </head>
-<body>
-  <main class="ticket">
+<body class="page">
+  <main class="card" style="padding-top:40px">
     {% if ok %}
     <div class="verify-box">
       <div class="status">Платёж найден в системе</div>

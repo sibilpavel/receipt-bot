@@ -54,3 +54,11 @@ def test_verify_ok_and_unknown(client, settings):
     # подпись от чека не подходит для проверки
     sig = re.search(r"sig=(\w+)", receipt_url(settings, "pay_0001")).group(1)
     assert client.get(f"/verify/pay_0001?sig={sig}").status_code == 404
+
+
+def test_parse_test_input():
+    from app.bot.handlers import parse_test_input
+    assert parse_test_input("5 12345") == (500, "12345")
+    assert parse_test_input(" 5,50   ab-1 ") == (550, "ab-1")
+    assert parse_test_input("0 12345") is None
+    assert parse_test_input("hello") is None

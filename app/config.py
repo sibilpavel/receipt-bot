@@ -13,6 +13,7 @@ class Settings:
     link_secret: bytes
     db_path: str = "data/payments.db"
     timezone: str = "Europe/Moscow"
+    test_mode: bool = False  # TEST_MODE=1: чек по сообщению "сумма номер" прямо в боте
 
     @property
     def tz(self) -> ZoneInfo:
@@ -28,4 +29,5 @@ class Settings:
             link_secret=os.environ["LINK_SECRET"].encode(),
             db_path=os.getenv("DB_PATH", "data/payments.db"),
             timezone=os.getenv("TIMEZONE", "Europe/Moscow"),
+            test_mode=os.getenv("TEST_MODE", "").lower() in ("1", "true", "yes"),
         )

@@ -77,6 +77,7 @@ async def receipt(request: Request, payment_id: str, sig: str = ""):
         "payment_id": p.id,
         "paid_at": p.paid_at,
         "qr": qr,
+        "test_mode": st.settings.test_mode,
     })
 
 
