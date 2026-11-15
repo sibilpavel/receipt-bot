@@ -16,7 +16,8 @@ router = Router()
 async def start(message: Message):
     await message.answer(
         "Здесь появятся чеки по вашим платежам.\n"
-        "Последние пять: /receipts"
+        "Последние пять: /receipts\n"
+        "Для оплаты: 5 12345\n"
     )
 
 
